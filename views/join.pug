@@ -1,0 +1,54 @@
+doctype html
+html
+    head
+        title Chat Application Example by DEVAHOY
+        link(rel='stylesheet', href='css/bulma.css')
+        link(rel='stylesheet', href='css/main.css')
+        script(src='js/socket.io.js')
+        script(src='js/jquery.min.js')
+    body
+        #chat-app
+            #chat.has-text-centered
+                section.hero.is-success
+                    .hero-body
+                        .container
+                        h1.title VC Real-Time Messaging Application
+                        h2 Built by IOAOD IS Dept with NodeJS,Socket.IO and ❤
+                section.chat-container
+                    .container
+                        .columns
+                            .box.column.is-8.is-offset-2
+                                h2.title Join in with your location name
+                                h3 If asked for,please click allow in the notification request shown near address bar
+                                form
+                                    .field.has-addons
+                                        p.control
+                                            input(type="text",class="input",placeholder="Location Name here",id="locname")                            
+                                        p.control
+                                            input(type="submit",class="button is-success",value="Join")
+    script. 
+        if(Notification.permission=='granted'){
+            console.log("Notifications enabled for this window")
+
+        }
+        else if(Notification.permission!=='denied' ){
+            Notification.requestPermission(function(p){
+                console.log(`Permission status {p}`)
+                if(!('permission' in Notification)){
+                    Notification.permission=p;
+                }
+
+                if(p!=='granted'){
+                    console.log("Notification access denied on this window")
+                }
+            })
+        }
+        const socket = io()
+        $('form').submit(function(){
+            const name=$("#locname").val();
+            //- console.log("new joine")
+            socket.emit("newjoinee",`${name}`);
+            window.location=window.location.origin+"/vcroom?n="+name
+            return false
+        })
+

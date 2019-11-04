@@ -1,0 +1,64 @@
+doctype html
+html
+  head
+    title Chat Application Example by DEVAHOY
+    link(rel='stylesheet', href='css/bulma.css')
+    link(rel='stylesheet', href='css/main.css')
+    script(src='js/socket.io.js')
+    script(src='js/jquery.min.js')
+  body
+    #chat-app
+      #chat.has-text-centered
+        section.hero.is-success
+          .hero-body
+            .container
+              h1.title Chat
+              h2 Chat Application with Node.js + socket.io
+        section.section.chat-container
+          .container
+            .columns
+              .box.column.is-8.is-offset-2
+                h2.title Chatbox
+                .chat-messages.has-text-left
+                  ul#chat-messages
+                form
+                  .field.has-addons
+                    p.control
+                      input(type='text', class='input', value='Chuck Norris', id='name')
+                    p.control.is-expanded
+                      input(type='text', class='input', placeholder='Try to say something', id='message')
+                    p.control
+                      input(type='submit', class='button is-success', value='Post')
+       
+        script.
+            
+            if(Notification.permission=='granted'){
+                console.log("Notifications enabled for this window")
+
+            }
+            else if(Notification.permission!=='denied' ){
+                Notification.requestPermission(function(p){
+                    console.log(`Permission status {p}`)
+                    if(!('permission' in Notification)){
+                        Notification.permission=p;
+                    }
+
+                    if(p!=='granted'){
+                        console.log("Notification access denied on this window")
+                    }
+                })
+            }
+            const socket = io()
+            $('form').submit(function(){
+                const name=$("#name").val();
+                const message=$("#message").val();
+
+                socket.emit("chatter",`${name}: ${message}`);
+                $("#message").val('')
+                return false
+            })
+        script. 
+            socket.on('chatter',function(message){
+                $("#chat-messages").append($("<li>").text(message));
+                new Notification(message)
+            })
